@@ -53,20 +53,50 @@ let x = 5;    // Statement — just stores 5, gives you nothing back
 ```
 6           // Any literal value is expression — gives you value 6
 ```
-* In Rust, any literal (Number, Float, Character, String, Boolean) value is an expression
+* In Rust, literals (Number, Float, Character, String, Boolean) are expressions because they evaluate to a value.
 
 #### Point - 2 :
 * Function definitions is statements 
 * Calling a function is expression
+* Calling a macro is an expression
 
-For example:
+    For example:
+    ```
+    fn main() {
+        let x =add(5,5);            // calling add() function here is a expression because it gives a value
+        println!("result is {x}");  // println! macro is a expression because it gives () unit value
+    }
+
+    fn add(x: i32, y: i32) -> i32 {     // this whole thing (call function defination)
+        x + y                           //  is a STATEMENT
+    }                                   // it does not give you a value
+    ```
+* A new scope block created with curly brackets is an expression
+    ```
+    fn main() {
+        let y = {
+            let x = 3;
+            x + 1
+        };
+
+        println!("The value of y is: {y}");
+    }
+
+    // this scope block is an expression
+    {
+        let x = 3;
+        x + 1
+    }
+    ```
+#### Point - 3 :
+Expressions do not include ending semicolons. If you add a semicolon to the end of an expression, it becomes a statement and return no value.
 ```
 fn main() {
-    let x =add(5,5);                 // calling add() function here is a expression
+    let x =add(5,5);   // Calling add() function is aa expression, ; at end makes it a statement
     println!("result is {x}")
 }
 
-fn add(x: i32, y: i32) -> i32 {     // this whole thing
-    x + y                           //  is a STATEMENT
-}                                   // it does not give you a value
+fn add(x: i32, y: i32) -> i32 {     
+    x + y                           
+}
 ```
