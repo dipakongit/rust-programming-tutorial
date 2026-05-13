@@ -39,30 +39,30 @@ fn print_labeled_measurement(value: i32, unit_label: char) {
 ```
 
 ## Statements and Expressions
-| | |
-|---|---|
-| Statements are instructions that perform some action and do not return a value. | An expression evaluates and gives you a value |
+#### Point - 1 :
+* Statements are instructions that perform some action and do not return a value. 
+* An expression evaluates and gives you a value
 
 For example:
 ```
 let x = 5;    // Statement — just stores 5, gives you nothing back
 ```
 ```
-5 + 6        // Expression — gives you back 11
+5 + 6        // Expression — gives you value 11
 ```
 ```
-6           // Any literal value is expression — gives you back 6 (even a plain number!)
+6           // Any literal value is expression — gives you value 6
 ```
 * In Rust, any literal (Number, Float, Character, String, Boolean) value is an expression
 
-| | |
-|---|---|
-| Function definitions is statements | Calling a function is expression |
+#### Point - 2 :
+* Function definitions is statements 
+* Calling a function is expression
 
 For example:
 ```
 fn main() {
-    let x =add(5,5);            // calling add() function here is a expression
+    let x =add(5,5);                 // calling add() function here is a expression
     println!("result is {x}")
 }
 
