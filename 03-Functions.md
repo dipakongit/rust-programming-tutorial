@@ -100,3 +100,38 @@ fn add(x: i32, y: i32) -> i32 {
     x + y                           
 }
 ```
+#### Point - 4 :
+Statements do not return values. Therefore, you can’t assign a let statement to another variable
+```
+fn main() {
+    let x = (let y = 6);
+}
+
+// you’ll get an error
+```
+
+## Return
+Functions can return values to the code that calls them
+```
+fn main() {
+   let x = add(5);
+   println!("result = {x}")
+}
+
+fn add(x:i32) -> i32 {
+    x + 1                // this is an expression that return a value
+}
+```
+
+#### But what happens if we place a semicolon at the end of the line containing x + 1, like this:
+```
+fn main() {
+   let x = add(5);
+   println!("result = {x}")
+}
+
+fn add(x:i32) -> i32 {
+    x + 1;               // now it changing from expression to statement
+}
+```
+Compiling this code produces an error, because placing a semicolon at the end of `x + 1` turns it into a statement, and statements don't return any value. So by default, the **add()** function returns `()` (called the unit type), which is not an **i32** type — causing a type mismatch error.
