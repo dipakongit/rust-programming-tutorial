@@ -80,3 +80,90 @@ fn main() {
    }
 }
 ```
+
+## break and continue
+```
+fn main() {
+    let mut count = 0;
+    loop {
+        count += 1;
+
+        if count == 2 {
+            continue;     // skip 2
+        }
+
+        if count == 4 {
+            break;        // stop the loop
+        }
+
+        println!("{count}");
+    }
+}
+```
+* **break** - stopes the loop
+* **continue** - skips the current iteration and moves to the next one
+
+### Returning Values from Loops
+If you want to return a value from a loop, you can add the value after the break expression. 
+```
+fn main() {
+    let result = loop {
+        let x = 5;
+
+        if x == 5 {
+            break x; // Stop the loop and return 5
+        }
+    };
+
+    println!("{result}");
+}
+```
+
+## while
+while is just a cleaner way to write loop + break
+#### Using loop + break:
+```
+fn main() {
+    let mut count = 4;
+    loop {
+        if count == 0 {
+            break;
+        }
+        println!("count={count}");
+        count -= 1
+    }
+}
+```
+#### Using while (cleaner way)
+```
+fn main() {
+    let mut count = 4;
+    while count != 0 {
+        println!("count={count}");
+        count -= 1
+    }
+}
+```
+While a condition evaluates to true, the code runs; otherwise, it exits the loop.
+
+## for
+for loop is used to iterate a collection or a range of values, executing the same block of code for each item.
+#### Example on collection of values
+```
+fn main() {
+    let colors = ["red", "green", "yellow", "blue", "white"];
+    for item in colors {
+        println!("colour name - {item}")
+    }
+}
+```
+#### Example on range of values
+```
+fn main() {
+    for number in (1..5).rev() {
+        println!("{number}")
+    }
+}
+```
+  * `1..5` this is range that prnt 1 to 4 but if want to print 1 to 5 use `1..=5`
+  * `rev()` is used to iterate a range or collection in reverse order
