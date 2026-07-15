@@ -1,0 +1,105 @@
+## What is Stack and Heap
+Both the stack and heap are parts of memory where your program store data at runtime. They are structured in different ways to store data.
+#### How data is stored on the stack
+All data stored in the stack must have a fixed size at compile time. For example:
+```
+let x: i32 = 5;
+```
+this is a simple variable that store in stack, because we know there exact size that is 32 bit
+```
+let a: [i32; 5] = [1, 2, 3, 4, 5];
+```
+This array is stored on the stack because:  
+* Array is fixed size → 5 elements, never changes
+* Each element is i32 → 32 bits = 4 bytes each
+So total space on stack:
+```
+5 elements × 32 bits = 160 bits = 20 bytes
+```
+Rust knows exactly how much space this array needs at compile time → so it goes on the stack
+
+#### How data is stored on the heap
+The heap is less organized. When you put data on the heap, you ask the memory allocator for some space. The memory allocator finds an empty spot in the heap, mark it as used and returns a pointer(memory address of that spot). The pointer itself is a fixed size, so it is stored on the stack.  
+But when you want the actual data, you read the pointer from the stack, go to that memory address on the heap, and get the actual data there.  
+
+The main purpose of ownership is to manage heap data. It keeps track of who owns the data, prevents unnecessary copies of the same data, and automatically frees the memory when it's no longer needed.
+
+
+## What is Ownership
+Ownership is Rust’s most unique feature. It enables Rust to make memory safety guarantees without needing a garbage collector.  
+
+Different programming languages manage memory in different ways. Some use a garbage collector that regularly check for no-longer-used memory and frees it at runtime, while others require programmers to manually allocate and free memory. Rust uses a unique ownership system where the compiler checks a set of rules at compile time. If any of the rules are violated, the program won’t compile.
+
+### Ownership Rules
+* Every value has an owner.
+* A value can have only one owner at a time.
+* When the owner goes out of scope, the value is dropped.
+
+### Variable Scope
+Scope is the block of code where a variable is valid and accessible. when the scope end the variable is automatically dropped (automatically dropped by rust ownership system).
+```
+        |--------{                    // scope start
+scope   |          let s = "hello";   // s is valid from here 
+        |          println!("{s}");   // s is valid and accessible
+        |--------}                    // scope end - s is dropped 
+                 // println!("{s}");  // Error: s is no longer available
+```
+When **s** comes into scope, it is valid. It remains valid until it goes out of scope.
+
+### String Literals
+```
+let s = "hello"
+    ^      ^
+    |      |
+    |      |
+    |     string literal
+    | 
+  this is a variable holds a string literal
+```
+#### What is string literal
+A string literal is a text written directly in source code enclosed in double quotes (**""**). For example:
+```
+"hello"
+"hello world"
+```
+#### Why are String Literals &str type?
+```
+let s: &str = "hello"
+```
+The actual text `hello` is of type `str` — but `str` has an unknown size at compile time. But rust need fixed known size at compile time to store value in stack.  
+
+Solution - use reference **&str**. A reference (**&**) doesn't store the data itself — it stores:
+* A pointer (memory address of string value) - fixed size (8 bytes on 64-bit systems)
+* A length of string value - fixed size (8 bytes)
+
+So **&str** is always a fixed size (16 bytes on a 64-bit system), no matter how long the actual string is. That's why rust put it in stack
+
+#### Where is "hello" stored?
+* `hello` is stored in the binary/executable file
+* When you run the program, the OS loads this binary into memory, and `hello` store in a read-only data segment (sometimes called **.rodata**). This memory is not the stack, and not the heap — it's a separate region
+
+### String Type
+We’ve already seen string literals, where a string value is hardcoded into our program. But they aren’t suitable for every situation 
+* **One reason :** they are immutable. so we can't grow or modify their content
+  ```
+   let s = "hello"     // we can't append text "hello" to "hello world"
+  ```
+* **Another reason :** not every string value can be known when we write our code. For example, what if we want to take user input and store it
+
+So for these reason Rust has the **String** type. For example:
+```
+let s = String::from("hello");
+                        ^
+                        |
+                        |
+                        |
+                      string literal 
+```
+This type manages data allocated on the heap and able to store an amount of text that is unknown to us at compile time  
+
+This kind of string can be mutated: 
+```
+let mut s = String::from("hello");
+s.push_str(" world");     // push_str() appends a literal to a String
+println!("{s}");         // this will print "hello world"
+```
