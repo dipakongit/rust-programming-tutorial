@@ -24,28 +24,6 @@ But when you want the actual data, you read the pointer from the stack, go to th
 
 The main purpose of ownership is to manage heap data. It keeps track of who owns the data, prevents unnecessary copies of the same data, and automatically frees the memory when it's no longer needed.
 
-
-## What is Ownership
-Ownership is Rust’s most unique feature. It enables Rust to make memory safety guarantees without needing a garbage collector.  
-
-Different programming languages manage memory in different ways. Some use a garbage collector that regularly check for no-longer-used memory and frees it at runtime, while others require programmers to manually allocate and free memory. Rust uses a unique ownership system where the compiler checks a set of rules at compile time. If any of the rules are violated, the program won’t compile.
-
-### Ownership Rules
-* Every value has an owner.
-* A value can have only one owner at a time.
-* When the owner goes out of scope, the value is dropped.
-
-### Variable Scope
-Scope is the block of code where a variable is valid and accessible. when the scope end the variable is automatically dropped (automatically dropped by rust ownership system).
-```
-        |--------{                    // scope start
-scope   |          let s = "hello";   // s is valid from here 
-        |          println!("{s}");   // s is valid and accessible
-        |--------}                    // scope end - s is dropped 
-                 // println!("{s}");  // Error: s is no longer available
-```
-When **s** comes into scope, it is valid. It remains valid until it goes out of scope.
-
 ### String Literals
 ```
 let s = "hello"
@@ -103,3 +81,51 @@ let mut s = String::from("hello");
 s.push_str(" world");     // push_str() appends a literal to a String
 println!("{s}");         // this will print "hello world"
 ```
+
+## What is Ownership
+Ownership is Rust’s most unique feature. It enables Rust to make memory safety guarantees without needing a garbage collector.  
+
+Different programming languages manage memory in different ways. Some use a garbage collector that regularly check for no-longer-used memory and frees it at runtime, while others require programmers to manually allocate and free memory. Rust uses a unique ownership system where the compiler checks a set of rules at compile time. If any of the rules are violated, the program won’t compile.
+
+### Ownership Rules
+* Every value has an owner.
+* A value can have only one owner at a time.
+* When the owner goes out of scope, the value is dropped.
+
+### Variable Scope
+Scope is the block of code where a variable is valid and accessible. When a variable goes out of scope, Rust automatically calls a special function named `drop` to free the memory for that variable
+```
+        |--------{                    // scope start
+scope   |          let s = "hello";   // s is valid from here 
+        |          println!("{s}");   // s is valid and accessible
+        |--------}                    // scope end - s is dropped 
+                 // println!("{s}");  // Error: s is no longer available
+```
+When **s** comes into scope, it is valid. It remains valid until it goes out of scope.
+
+### What happens when you assign one variable to another?
+Now let’s look at the **String** version:
+```
+let s1 = String::from("hello");
+let s2 = s1;
+```
+See what is happening here: 
+
+![](images/ownership-1.png)
+> Figure-1
+
+A **String** has 3 parts:
+1) **Pointer** - a memory address, which points to where the string's data is stored
+2) **Length** - how much memory (in bytes) the string's contents currently use
+3) **Capacity** - the total amount of memory (in bytes) that the **String** has received from the allocator
+
+This group of data is stored on the stack. On the right side is heap that holds the string's data    
+
+####
+
+![](images/ownership-2.png)
+> Figure-2
+
+When we assign `s1` to `s2`, Rust copies the stack data (pointer, length, capacity) but does not copy the heap data ("hello") that the pointer points to. This is because copying heap data would be very expensive in terms of runtime performance if the data on the heap grows large.
+
+#### What is a double free error and how does Rust prevent it?
