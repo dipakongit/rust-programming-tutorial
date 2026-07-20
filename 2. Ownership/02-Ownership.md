@@ -128,4 +128,32 @@ This group of data is stored on the stack. On the right side is heap that holds 
 
 When we assign `s1` to `s2`, Rust copies the stack data (pointer, length, capacity) but does not copy the heap data ("hello") that the pointer points to. This is because copying heap data would be very expensive in terms of runtime performance if the data on the heap grows large.
 
-#### What is a double free error and how does Rust prevent it?
+### What is a double free error and how does Rust prevent it?
+We know that when a variable goes out of scope, Rust automatically calls the `drop` function and cleans up the heap memory for that variable. But Figure-2 shows both data pointers pointing to the same location. This is a problem: When s2 and s1 go out of scope, they will both try to free the same memory. This is known as a **double free error** and is one of the memory safety bugs. Freeing memory twice can corrupt memory and cause security risks.  
+
+To ensure memory safety, Rust treats `s1` as invalid after `let s2 = s1;`. Therefore, Rust doesn't need to free anything when `s1` goes out of scope. So if you try to use `s1` after `let s2 = s1;`, it won't work:
+```
+let s1 = String::from("hello");
+let s2 = s1;
+
+println!("{s1}, world!");
+```
+You'll get an error because Rust prevents you from using the invalidated variable."  
+
+This concept is known as **move**. In this example, s1 move to s2. That solves our problem - only s2 is valid, so s2 will drop when it goes out of scope.
+
+### What happens when you assign a completely new value to an existing variable?
+When you assign a completely new value to an existing variable, Rust will call `drop` and free the original value from memory immediately. For example:
+```
+let mut s = String::from("hello");
+s = String::from("digital");        // new value assign
+
+println!("{s} world");              // it will print `digital world`
+```
+![](images/ownership-3.png)
+> Figure-3
+
+* **hello** allocated on heap
+* **digital** allocated on heap, **hello** is dropped immediately (inside scope, not at end of scope)
+* prints **digital world**
+* When the scope ends, the new value (**digital**) will be dropped also.
