@@ -142,7 +142,7 @@ You'll get an error because Rust prevents you from using the invalidated variabl
 
 This concept is known as **move**. In this example, s1 move to s2. That solves our problem - only s2 is valid, so s2 will drop when it goes out of scope.
 
-### What happens when you assign a completely new value to an existing variable?
+### What appens when you assign a completely new value to an existing variable?
 When you assign a completely new value to an existing variable, Rust will call `drop` and free the original value from memory immediately. For example:
 ```
 let mut s = String::from("hello");
@@ -157,3 +157,148 @@ println!("{s} world");              // it will print `digital world`
 * **digital** allocated on heap, **hello** is dropped immediately (inside scope, not at end of scope)
 * prints **digital world**
 * When the scope ends, the new value (**digital**) will be dropped also.
+
+### How to Copy Heap Data in RUST
+Before we read: when we copy a variable value to another variable, it copies the stack data (pointer, length, capacity) but does not copy the heap data, because copying heap data is very expensive. 
+
+But in Rust we can also copy the heap data using a method called clone, which is called deep copy. For example:
+```
+let s1 = String::from("hello");
+let s2 = s1.clone();
+println!("s1 = {s1}, s2 = {s2}");
+```
+![](images/ownership-4.png)
+> Figure-4
+
+### How Does Rust Copy Stack Data?
+```
+let x = 5;
+let y = x;
+println!("x = {x}, y = {y}");
+```
+* In this code - We don't call `clone` method, but **x** is valid and was not move to **y**.
+* You might think that **x** becomes invalid after assigning it to **y**, but it doesn't. Both **x** and **y** are valid.
+
+##### Why?
+Because the type `i32` implements the **Copy trait**. When a type implements the **Copy trait**, Rust copies the value instead of moving it.
+```
+x = 5
+    |
+    | Copy
+    |
+    ▼
+y = 5
+```
+Both variables have their own copy of the value, so both are valid.
+
+##### What Is the Copy Trait?
+The **Copy trait** tells Rust: Automatically copy this value instead of moving it..
+
+##### What Types Implement the Copy Trait?
+* All integer types (i8, i32, u64, etc.)
+* All the floating-point types (f32, f64)
+* The Boolean type (bool)
+* The character type (char)
+* Arrays and tuples also implement the Copy trait if all of their elements implement the Copy trait. For example
+   ```
+    // implements Copy trait
+    let tup: (i32, f64, u8) = (500, 6.4, 1);
+
+    // does not implements the Copy trait, 
+    //  because one element is String type that does not implements Copy trait
+    let tup: (i32, f64, String) = (500, 6.4, String::from("hello"));
+   ```
+
+#### Does ownership apply to stack data in Rust?
+No. Ownership applies to all values in Rust, not just heap data.  
+
+The rule is:  
+**Every value has an owner.**  
+
+For example:
+```
+let x = 5;
+```
+Here `x` is the owner of value `5`. Now:
+```
+let y = x;
+```
+Normally, assigning a value moves ownership. But, i32 implements the Copy trait. So instead of moving ownership, Rust creates another independent value. After the copy:
+```
+5        5
+↑        ↑
+x        y
+(owner)  (owner)
+```
+now there are two separate value, not one balue with two owners. Each variable owns its own copy. That's why both are valid:
+```
+println!("{x}");
+println!("{y}");
+```
+##### Why is this still called ownership?
+Because every value has exactly one owner.
+
+## Ownership and Functions
+### How Ownership work when passing a value to a function?
+Passing a value to a function works the same way as assigning a value to a variable. For example:
+```
+fn main() {
+    let s = String::from("hello");  // s comes into scope
+
+    takes_ownership(s);             // s value moves into the function...
+                                    // ... and so is no longer valid here
+                                    // ... so we can't use s afterward
+
+    let x = 5;                      // x comes into scope
+
+    makes_copy(x);                  // Because i32 implements the Copy trait,
+                                    // x does NOT move into the function,
+                                    // so we can use x afterward.
+
+} // Here, x goes out of scope, then s. s was moved, so nothing happens
+
+fn takes_ownership(some_string: String) { // some_string comes into scope
+    println!("{some_string}");
+} // Here, some_string goes out of scope and `drop` is called. The memory is freed.
+
+fn makes_copy(some_integer: i32) { // some_integer comes into scope
+    println!("{some_integer}");
+} // Here, some_integer goes out of scope. Nothing special happens.
+```
+
+### How Ownership work when return value from a function?
+Returning a value from a function also transfers ownership. This works in a similar way to passing a value to a function. For example:
+```
+fn main() {
+    let s1 = gives_ownership();        // gives_ownership moves its return
+                                       // value into s1
+
+    let s2 = String::from("hello");    // s2 comes into scope
+
+    let s3 = takes_and_gives_back(s2); // s2 is moved into
+                                       // takes_and_gives_back, which also
+                                       // moves its return value into s3
+} // Here, s3 goes out of scope and is dropped. s2 was moved, so nothing happens.
+  // s1 goes out of scope and is dropped.
+
+fn gives_ownership() -> String {       // gives_ownership will move its
+                                       // return value into the function
+                                       // that calls it
+
+    let some_string = String::from("yours"); // some_string comes into scope
+
+    some_string                        // some_string is returned and
+                                       // moves out to the calling
+                                       // function
+}
+
+// This function takes a String and returns a String.
+fn takes_and_gives_back(a_string: String) -> String {
+    // a_string comes into
+    // scope
+
+    a_string  // a_string is returned and moves out to the calling function
+}
+```
+The ownership of a variable follows the same pattern every time: Assigning a value to another variable moves it. When a variable that includes data on the heap goes out of scope, the value will be cleaned up by drop unless ownership of the data has been moved to another variable.
+
