@@ -326,4 +326,4 @@ fn calculate_length(s: String) -> (String, usize) {
                                         // Ownership of the String moves back to the caller (who call this fumction).
 }
 ```
-Here, we cannot use `s1` after its ownership has been moved to the function. To continue using the string `hello`, the function must return ownership of the String back to the caller. Although this works, taking ownership and then returning it from every function is a bit tedious. Rust solves this problem with references **(&)**, which allow a function to use a value without taking ownership.
+Here, we cannot use `s1` after its ownership has been moved to the function. To continue using the string `hello`, the function must return ownership of the String back to the caller. Although this works, taking ownership and then returning it from every function is a bit tedious. To solve this problem, Rust provides a feature called references **(&)**, which allow you to use a value without transferring ownership.
