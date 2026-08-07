@@ -300,5 +300,30 @@ fn takes_and_gives_back(a_string: String) -> String {
     a_string  // a_string is returned and moves out to the calling function
 }
 ```
-The ownership of a variable follows the same pattern every time: Assigning a value to another variable moves it. When a variable that includes data on the heap goes out of scope, the value will be cleaned up by drop unless ownership of the data has been moved to another variable.
+Ownership always follows the same rules: assigning a value to another variable moves ownership, and when the owner goes out of scope, the value is dropped.
 
+### How Can a Function Use a Value Without Taking Ownership?
+```
+fn main() {
+    let s1 = String::from("hello");      // s1 becomes the owner of the String.
+
+    let (s2, len) = calculate_length(s1); // Ownership of the String moves from s1
+                                          // to the function parameter s.
+                                          // The function returns:
+                                          //   - the original String
+                                          //   - its length
+                                          // s2 becomes the new owner of the String,
+                                          // and len stores its length.
+                                          // s1 is no longer valid and cannot be used.
+
+    println!("The length of '{s2}' is {len}."); 
+}
+
+fn calculate_length(s: String) -> (String, usize) {
+    let length = s.len();               // Calculate the length of the String.
+
+    (s, length)                         // Return the original String and its length.
+                                        // Ownership of the String moves back to the caller (who call this fumction).
+}
+```
+Here, we cannot use `s1` after its ownership has been moved to the function. To continue using the string `hello`, the function must return ownership of the String back to the caller. Although this works, taking ownership and then returning it from every function is a bit tedious. Rust solves this problem with references **(&)**, which allow a function to use a value without taking ownership.
