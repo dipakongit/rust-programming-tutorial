@@ -58,7 +58,7 @@ So **&str** is always a fixed size (16 bytes on a 64-bit system), no matter how 
 
 ### String Type
 We’ve already seen string literals, where a string value is hardcoded into our program. But they aren’t suitable for every situation 
-* **One reason :** they are immutable. so we can't grow or modify their content
+* **One reason :** they are immutable. so we can't modify their content
   ```
    let s = "hello"     // we can't append text "hello" to "hello world"
   ```
@@ -73,23 +73,69 @@ let s = String::from("hello");
                         |
                       string literal 
 ```
-This type manages data allocated on the heap and able to store an amount of text that is unknown to us at compile time  
+#### How is a String stored in memory in Rust?
+Rust stores the actual string data on the heap and the pointer, length, and capacity of the String are stored on the stack.    
+```
+STACK
+┌──────────────────────┐
+│ Pointer = 0x1000     │  ← pointer is stored here
+│ Length = 5           │
+│ Capacity = 5         │
+└──────────┬───────────┘
+           │
+           │ points to address 0x1000
+           ↓
+HEAP
+┌──────────────────────┐
+│ 0x1000 → h           │
+│ 0x1001 → e           │
+│ 0x1002 → l           │
+│ 0x1003 → l           │
+│ 0x1004 → o           │
+└──────────────────────┘
+```
+* **Pointer**  - stores the memory address of the first byte (`h`)
+* **Length**   - tells how many bytes are currently used. `hello` uses 5 bytes, so length is 5.
+* **Capacity** - tells how many bytes of heap memory have been allocated for the String.
 
-This kind of string can be mutated: 
+**How do a pointer and length represent a whole string?**  
+The pointer points to the first byte (`h`).
+```
+pointer = 0x1000
+```
+the length of `hello` is **5**. Therefore valid byte indexes are:
+```
+0, 1, 2, 3, 4
+```
+Rust can calculate the address of each byte using:
+```
+starting address + byte index
+```
+For example:
+```
+index 0 → 0x1000 → h
+index 1 → 0x1001 → e
+index 2 → 0x1002 → l
+index 3 → 0x1003 → l
+index 4 → 0x1004 → o
+```
+So Rust doesn't need a separate pointer for every byte. A pointer to the first byte and the length are enough to describe the whole contiguous byte sequence.
+
+#### String type can be mutated
 ```
 let mut s = String::from("hello");
 s.push_str(" world");     // push_str() appends a literal to a String
 println!("{s}");         // this will print "hello world"
 ```
 
-## What is Ownership
-Ownership is Rust’s most unique feature. It enables Rust to make memory safety guarantees without needing a garbage collector.  
+## Ownership
+Rust uses **Ownership** to manage memory in a safe way.  
 
 Different programming languages manage memory in different ways. Some use a garbage collector that regularly check for no-longer-used memory and frees it at runtime, while others require programmers to manually allocate and free memory. Rust uses a unique ownership system where the compiler checks a set of rules at compile time. If any of the rules are violated, the program won’t compile.
 
 ### Ownership Rules
-* Every value has an owner.
-* A value can have only one owner at a time.
+* Every value has one owner.
+* You can only have one owner at a time.
 * When the owner goes out of scope, the value is dropped.
 
 ### Variable Scope
@@ -104,29 +150,21 @@ scope   |          let s = "hello";   // s is valid from here
 When **s** comes into scope, it is valid. It remains valid until it goes out of scope.
 
 ### What happens when you assign one variable to another?
-Now let’s look at the **String** version:
+In this example, **s1** owns the string. Then we move it to **s2**
 ```
 let s1 = String::from("hello");
 let s2 = s1;
 ```
-See what is happening here: 
 
 ![](images/ownership-1.png)
 > Figure-1
 
-A **String** has 3 parts:
-1) **Pointer** - a memory address, which points to where the string's data is stored
-2) **Length** - how much memory (in bytes) the string's contents currently use
-3) **Capacity** - the total amount of memory (in bytes) that the **String** has received from the allocator
-
-This group of data is stored on the stack. On the right side is heap that holds the string's data    
-
-####
+When we assign **s1** to **s2**, the ownership moves. This means only **s2** can use the value now, because **s1** is no longer valid.
 
 ![](images/ownership-2.png)
 > Figure-2
 
-When we assign `s1` to `s2`, Rust copies the stack data (pointer, length, capacity) but does not copy the heap data ("hello") that the pointer points to. This is because copying heap data would be very expensive in terms of runtime performance if the data on the heap grows large.
+That case Rust copies the stack data (pointer, length, capacity) but does not copy the heap data (`hello`). This is because copying heap data would be very expensive in terms of runtime performance if the data on the heap grows large.
 
 ### What is a double free error and how does Rust prevent it?
 We know that when a variable goes out of scope, Rust automatically calls the `drop` function and cleans up the heap memory for that variable. But Figure-2 shows both data pointers pointing to the same location. This is a problem: When s2 and s1 go out of scope, they will both try to free the same memory. This is known as a **double free error** and is one of the memory safety bugs. Freeing memory twice can corrupt memory and cause security risks.  
@@ -210,7 +248,7 @@ The **Copy trait** tells Rust: Automatically copy this value instead of moving i
    ```
 
 #### Does ownership apply to stack data in Rust?
-No. Ownership applies to all values in Rust, not just heap data.  
+Ownership applies to all values in Rust, not just heap data.  
 
 The rule is:  
 **Every value has an owner.**  
