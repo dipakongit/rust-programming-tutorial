@@ -10,6 +10,8 @@ fn main() {
 ```
 **s2** only accesses (borrowing) the value, but **s1** still owns it.
 
+**Borrow** → you can use the data without taking ownership.
+
 ### Passing References to Functions
 ```
 fn calculate_length(s: &String) -> usize {      // s is a reference to a String
