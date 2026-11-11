@@ -1,5 +1,5 @@
 # Convert temperatures between Fahrenheit and Celsius
-```
+```rust
 fn main() {
     // Convert fahrenheit to celsius
     let f_temp = 30.0;
@@ -22,7 +22,7 @@ fn celsius_fahrenheit(c_temp: f32) -> f32 {
 ```
 
 # Generate the nth Fibonacci number.
-```
+```rust
 fn main() {
     for n in 0..=10 {
         let fibonacci_number = fibonacci(n);
@@ -40,7 +40,7 @@ fn fibonacci(n: u32) -> u32 {
 ```
 
 # Print the lyrics to the Christmas carol “The Twelve Days of Christmas,” taking advantage of the repetition in the song.
-```
+```rust
 fn main() {
     let days = [
         "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth",

@@ -1,6 +1,6 @@
 ## References and Borrowing
 Sometimes you want to use a value without taking ownership of it. Rust lets you do this using a **Reference** - this is called **Borrowing**. You create a reference using the `&` symbol. For example:
-```
+```rust
 fn main() {
     let s1 = String::from("hello");
     let s2 = &s1;
@@ -13,7 +13,7 @@ fn main() {
 **Borrow** → you can use the data without taking ownership.
 
 ### Passing References to Functions
-```
+```rust
 fn calculate_length(s: &String) -> usize {      // s is a reference to a String
     s.len()                                     // With references, a function can use a value without taking ownership,
                                                 // so there is no need to return the value to give ownership back.
@@ -41,7 +41,7 @@ Simple rule:
 
 ### Mutable References
 So, what happens if we try to modify something we’re borrowing? 
-```
+```rust
 fn main() {
     let s = String::from("hello");  // immutable variable
     change(&s);                     // &s creates an immutable reference
@@ -54,7 +54,7 @@ fn change(some_string: &String) {    // take an immutable reference
 This code gives a compile-time error because **&String** is an immutable reference by default. An immutable reference can read a value, but it cannot modify the value. If you want to modify a borrowed value, you need to use a mutable reference `(**&mut)`.  
 
 To make this example work, both need to be mutable:  
-```
+```rust
 fn change(s_ref: &mut String) {        // takes a mutable reference
     s_ref.push_str(" world");          // mutable reference allows us to change the value
 }
@@ -66,7 +66,7 @@ fn main() {
 ```
 
 #### What happens if we create two mutable references to the same value?
-```
+```rust
 let mut s = String::from("hello");
 
 let r1 = &mut s;
@@ -85,7 +85,7 @@ It helps prevent data races, and the Rust compiler prevents them at compile time
 
 #### How Can We Use Multiple Mutable References?
 we can use curly brackets to create a new scope, allowing for multiple mutable references, but not at the same time. For example:
-```
+```rust
 let mut s = String::from("hello");
 
 {
@@ -97,7 +97,7 @@ let r2 = &mut s;  // we can create a new mutable reference
 
 #### Can We Use Mutable and Immutable References at the same Time?
 Rust does not allow to use mutable and immutable references at the same time. This code give an error:
-```
+```rust
 let mut s = String::from("hello");
 
 let r1 = &s;      //  Multiple immutable references 
@@ -111,7 +111,7 @@ println!("{r1}, {r2}, and {r3}");
 
 #### Can We Use Multiple immutable references?
 Multiple immutable references are allowed because someone who is only reading the data cannot affect anyone who is also reading it.
-```
+```rust
 let s = String::from("hello");
 let r1 = &s;
 let r2 = &s;
@@ -119,7 +119,7 @@ let r2 = &s;
 
 #### When Does Rust Allow a Mutable Reference After Immutable References?
 A reference starts when it is created and ends when it is last used. This code compiles because the immutable references are last used before the mutable reference is introduced.
-```
+```rust
 let mut s = String::from("hello");
 
 let r1 = &s;                    // Multiple immutable references
@@ -137,7 +137,7 @@ In languages where you manually work with pointers, it is easy to accidentally c
 But Rust is different. Rust has **references** and Rust compiler guarantees that references will never be dangling references.  
 
 Let’s try to create a dangling reference to see how Rust prevents it:
-```
+```rust
 fn main() {
     let r = dangle();
 }
@@ -151,7 +151,7 @@ This code give an error:
 Because `s` is created inside `dangle`, when the code of `dangle` is finished, `s` will be dropped. But we tried to return a reference to it. That means the reference `&s` would point to data that no longer exists. Rust detects this at compile time and gives an error instead of allowing us to create a dangling reference.   
 
 The solution is:
-```
+```rust
 fn main() {
     let r = dangle(); // Ownership of the String is moved to `r`.
 }

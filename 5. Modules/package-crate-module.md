@@ -4,7 +4,7 @@ Rust uses several features to organize code:
 ## Package
 A package is a collection of crates managed by **Cargo**. It contains a `Cargo.toml` file that tells **Cargo** how to build the project.
 #### Example:
-```
+```rust
 my-project/        ← Package
 ├── Cargo.toml     
 └── src/
@@ -24,7 +24,7 @@ A crate is the complete unit of code that Rust compiles. There are two types:
 
 #### Crate Root
 The **crate root** is the starting source file of a crate. With Cargo:
-```
+```rust
 src/main.rs → crate root of a binary crate
 src/lib.rs  → crate root of a library crate
 ```
@@ -33,7 +33,7 @@ src/lib.rs  → crate root of a library crate
 A way to group related code inside a crate.
 
 #### Example:
-```
+```rust
 // create module
 mod resturent {
     pub fn add_customer() {
@@ -46,7 +46,7 @@ fn main() {
 }
 ```
 How it is organized?
-```
+```rust
 Binary Crate
 │
 ├── main()               ← function
@@ -60,7 +60,7 @@ When a module becomes large, we can move it into a separate file to keep the pro
 
 #### Example: Restaurant
 We can organize restaurant code like this:
-```
+```rust
 my-project/
 ├── Cargo.toml     
 └── src/
@@ -73,21 +73,21 @@ my-project/
 * if you use the `restaurant.rs` + `restaurant/` folder layout, they must have the same name.  
 
 `src/resturent.rs`
-```
+```rust
 pub mod customer;
 pub mod serving;
 ```
 * load `customer` and `serving` as child modules, and make them **public**.
 
 `src/resturent/customer.rs`
-```
+```rust
 pub fn add_customer() {
     println!("Customer added");
 }
 ```
 
 `src/resturent/serving.rs`
-```
+```rust
 pub fn take_order() {
     println!("Taking customer order");
 }
@@ -98,7 +98,7 @@ pub fn serve_order() {
 ```
 
 `src/main.rs`
-```
+```rust
 mod resturent;
 
 fn main() {
@@ -111,7 +111,7 @@ fn main() {
 
 ## Path
 A path tells Rust where an item (function, struct, module, etc.) is located.
-```
+```rust
 crate::resturent::add_customer();
 │      │           │
 │      │           └── Function
@@ -121,19 +121,19 @@ crate::resturent::add_customer();
 Think of it like a **file path**.
 #### Absolute Path
 Starts from the crate root using `crate::`
-```
+```rust
 crate::resturent::add_customer();
 ```
 #### Relative Path
 Starts from the current module.
-```
+```rust
 resturent::add_customer();
 ```
 
 ## `pub`
 ### Exposing Paths with the `pub` Keyword
 Items are private by default. `pub` makes an item accessible from outside its module.
-```
+```rust
 fn add_customer() {}      // private
 
 pub fn add_customer() {}  // public
@@ -142,7 +142,7 @@ pub fn add_customer() {}  // public
 Making a module public does not automatically make the items inside it public. Each item has its own visibility.  
 
 Example:
-```
+```rust
 pub mod customer {           // public
     fn add_customer() {      // private
         println!("Customer added");
@@ -150,7 +150,7 @@ pub mod customer {           // public
 }
 ```
 We can reach **customer**, but not `add_customer()`. Because each level has its own visibility:
-```
+```rust
 pub mod customer {           // public
   pub fn add_customer() {    // public
         println!("Customer added");
@@ -163,7 +163,7 @@ pub mod customer {           // public
 ### Making Structs and Enums Public
 #### Public Struct
 Making the struct `pub` does not make its fields public.
-```
+```rust
 use crate::resturent::Breakfast;
 
 mod resturent{
@@ -186,7 +186,7 @@ fn main() {
 
 #### Public Enum
 For an enum, making the enum `pub` automatically makes all variants public.
-```
+```rust
 use crate::resturent::Appetizer;
 
 mod resturent {
@@ -205,7 +205,7 @@ fn main() {
 
 ## `use`
 With `use`, we can make the path shorter:
-```
+```rust
 use crate::resturent::customer;
 
 mod resturent {
@@ -222,7 +222,7 @@ fn main() {
 ```
 #### Important: `use` has a scope
 The shortcut only works where the `use` is written.
-```
+```rust
 use crate::resturent::customer;
 
 mod resturent {
@@ -250,7 +250,7 @@ fn main() {
 }
 ```
 Use it inside `serving` module:
-```
+```rust
 pub mod serving {
     use crate::resturent::customer;
     
@@ -266,13 +266,13 @@ pub mod serving {
 ### Idiomatic `use` Paths
 #### For functions -> import the parent module
 Instead of:
-```
+```rust
 use crate::restaurant::customer::add_customer;
 
 add_to_waitlist();
 ```
 Prefer:
-```
+```rust
 use crate::restaurant::customer;
 
 customer::add_customer();
@@ -281,7 +281,7 @@ It makes it clear that `add_customer()` comes from the `customer` module.
 
 #### For structs, enums, etc. → import the item directly
 For example:
-```
+```rust
 // Here we import an Enum `Appetizer` directly.
 use crate::resturent::Appetizer;
 
@@ -299,7 +299,7 @@ fn main() {
 
 #### Same name → keep the parent module
 Suppose two modules both have `order()` function:
-```
+```rust
 mod resturent {
     pub mod kitchen {
         pub fn order() {
@@ -315,12 +315,12 @@ mod resturent {
 }
 ```
 We cannot do this:
-```
+```rust
 use crate::resturent::customer::order;
 use crate::resturent::kitchen::order;
 ```
 Both functions are named `order`, so there would be a name conflict. Instead, import the parent modules:
-```
+```rust
 use crate::resturent::customer;  // import the parent modules
 use crate::resturent::kitchen;   // import the parent modules
 
@@ -348,12 +348,12 @@ fn main() {
 `as` is used to give another name (alias) to an imported item. This is useful when two items have the same name.  
 
 For example, imagine a project uses two libraries that both have a type called `Config`:
-```
+```rust
 use library_a::Config;
 use library_b::Config as DatabaseConfig;
 ```
 Now you can clearly use:
-```
+```rust
 let config = Config::new();
 let db_config = DatabaseConfig::new();
 ```
@@ -363,16 +363,16 @@ Without `as`, both would be called `Config`, causing a conflict.
 When multiple use statements have the same beginning, we can combine them into one line.   
 
 Instead of:
-```
+```rust
 use crate::resturent::customer;
 use crate::resturent::kitchen;
 ```
 We can write:
-```
+```rust
 use crate::resturent::{customer, kitchen};
 ```
 The common part is:
-```
+```rust
 crate::resturent::
 ```
 
@@ -381,13 +381,13 @@ Rust lets you use packages made by other developers.
 
 #### 1. Add the package to `Cargo.toml`
 For example, `rand`:
-```
+```rust
 [dependencies]
 rand = "0.10.1"
 ```
 Cargo downloads it and makes it available to your project.
 #### 2. Use it in your code
-```
+```rust
 use rand::RngExt;
 
 fn main() {
@@ -401,11 +401,11 @@ We can create a library crate and use it from another Rust project.
 
 ### Create the library
 #### 1. Creates a new Rust library package name `restaurant`
-```
+```rust
 cargo new restaurant --lib
 ```
 This creates:
-```
+```rust
 restaurant/
 ├── Cargo.toml
 └── src/
@@ -413,7 +413,7 @@ restaurant/
 ```
 #### 2. Create the module files
 Final structure:
-```
+```rust
 restaurant/
 ├── Cargo.toml
 └── src/
@@ -424,22 +424,22 @@ restaurant/
         └── serving.rs   ← submodule
 ```
 `src/lib.rs`
-```
+```rust
 pub mod resturent;
 ```
 `src/restaurant.rs`
-```
+```rust
 pub mod customer;
 pub mod serving;
 ```
 `src/restaurant/customer.rs`
-```
+```rust
 pub fn add_customer() {
     println!("Customer added");
 }
 ```
 `src/restaurant/serving.rs`
-```
+```rust
 pub fn take_order() {
     println!("Taking customer order");
 }
@@ -451,11 +451,11 @@ pub fn serve_order() {
 
 ### Use this library to another project
 #### 1. Create new Project
-```
+```rust
 cargo new my_app
 ```
 This creates:
-```
+```rust
 my_app/
 ├── Cargo.toml
 └── src/
@@ -463,14 +463,14 @@ my_app/
 ```
 #### 2. Add the library as a dependency
 In `my_app/Cargo.toml`:
-```
+```rust
 [dependencies]
 restaurant = { path = "../restaurant" }
 ```
 * `path` tells Cargo where the local library is located.
 #### 3. Use the library
 In `my_app/src/main.rs`:
-```
+```rust
 use restaurant::resturent::{customer, serving};
 
 fn main() {

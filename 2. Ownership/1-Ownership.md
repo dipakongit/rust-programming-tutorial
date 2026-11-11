@@ -2,18 +2,18 @@
 Both the stack and heap are parts of memory where your program store data at runtime. They are structured in different ways to store data.
 #### How data is stored on the stack
 All data stored in the stack must have a fixed size at compile time. For example:
-```
+```rust
 let x: i32 = 5;
 ```
 this is a simple variable that store in stack, because we know there exact size that is 32 bit
-```
+```rust
 let a: [i32; 5] = [1, 2, 3, 4, 5];
 ```
 This array is stored on the stack because:  
 * Array is fixed size → 5 elements, never changes
 * Each element is i32 → 32 bits = 4 bytes each
 So total space on stack:
-```
+```rust
 5 elements × 32 bits = 160 bits = 20 bytes
 ```
 Rust knows exactly how much space this array needs at compile time → so it goes on the stack
@@ -25,7 +25,7 @@ But when you want the actual data, you read the pointer from the stack, go to th
 The main purpose of ownership is to manage heap data. It keeps track of who owns the data, prevents unnecessary copies of the same data, and automatically frees the memory when it's no longer needed.
 
 ### String Literals
-```
+```rust
 let s = "hello"
     ^      ^
     |      |
@@ -36,12 +36,12 @@ let s = "hello"
 ```
 #### What is string literal
 A string literal is a text written directly in source code enclosed in double quotes (**""**). For example:
-```
+```rust
 "hello"
 "hello world"
 ```
 #### Why are String Literals &str type?
-```
+```rust
 let s: &str = "hello"
 ```
 The actual text `hello` is of type `str` — but `str` has an unknown size at compile time. But rust need fixed known size at compile time to store value in stack.  
@@ -59,13 +59,13 @@ So **&str** is always a fixed size (16 bytes on a 64-bit system), no matter how 
 ### String Type
 We’ve already seen string literals, where a string value is hardcoded into our program. But they aren’t suitable for every situation 
 * **One reason :** they are immutable. so we can't modify their content
-  ```
+  ```rust
    let s = "hello"     // we can't append text "hello" to "hello world"
   ```
 * **Another reason :** not every string value can be known when we write our code. For example, what if we want to take user input and store it
 
 So for these reason Rust has the **String** type. For example:
-```
+```rust
 let s = String::from("hello");
                         ^
                         |
@@ -75,7 +75,7 @@ let s = String::from("hello");
 ```
 #### How is a String stored in memory in Rust?
 Rust stores the actual string data on the heap and the pointer, length, and capacity of the String are stored on the stack.    
-```
+```rust
 STACK
 ┌──────────────────────┐
 │ Pointer = 0x1000     │  ← pointer is stored here
@@ -100,19 +100,19 @@ HEAP
 
 **How do a pointer and length represent a whole string?**  
 The pointer points to the first byte (`h`).
-```
+```rust
 pointer = 0x1000
 ```
 the length of `hello` is **5**. Therefore valid byte indexes are:
-```
+```rust
 0, 1, 2, 3, 4
 ```
 Rust can calculate the address of each byte using:
-```
+```rust
 starting address + byte index
 ```
 For example:
-```
+```rust
 index 0 → 0x1000 → h
 index 1 → 0x1001 → e
 index 2 → 0x1002 → l
@@ -122,7 +122,7 @@ index 4 → 0x1004 → o
 So Rust doesn't need a separate pointer for every byte. A pointer to the first byte and the length are enough to describe the whole contiguous byte sequence.
 
 #### String type can be mutated
-```
+```rust
 let mut s = String::from("hello");
 s.push_str(" world");     // push_str() appends a literal to a String
 println!("{s}");         // this will print "hello world"
@@ -140,7 +140,7 @@ Different programming languages manage memory in different ways. Some use a garb
 
 ### Variable Scope
 Scope is the block of code where a variable is valid and accessible. When a variable goes out of scope, Rust automatically calls a special function named `drop` to free the memory for that variable
-```
+```rust
         |--------{                    // scope start
 scope   |          let s = "hello";   // s is valid from here 
         |          println!("{s}");   // s is valid and accessible
@@ -151,7 +151,7 @@ When **s** comes into scope, it is valid. It remains valid until it goes out of 
 
 ### What happens when you assign one variable to another?
 In this example, **s1** owns the string. Then we move it to **s2**
-```
+```rust
 let s1 = String::from("hello");
 let s2 = s1;
 ```
@@ -170,7 +170,7 @@ That case Rust copies the stack data (pointer, length, capacity) but does not co
 We know that when a variable goes out of scope, Rust automatically calls the `drop` function and cleans up the heap memory for that variable. But Figure-2 shows both data pointers pointing to the same location. This is a problem: When s2 and s1 go out of scope, they will both try to free the same memory. This is known as a **double free error** and is one of the memory safety bugs. Freeing memory twice can corrupt memory and cause security risks.  
 
 To ensure memory safety, Rust treats `s1` as invalid after `let s2 = s1;`. Therefore, Rust doesn't need to free anything when `s1` goes out of scope. So if you try to use `s1` after `let s2 = s1;`, it won't work:
-```
+```rust
 let s1 = String::from("hello");
 let s2 = s1;
 
@@ -182,7 +182,7 @@ This concept is known as **move**. In this example, s1 move to s2. That solves o
 
 ### What appens when you assign a completely new value to an existing variable?
 When you assign a completely new value to an existing variable, Rust will call `drop` and free the original value from memory immediately. For example:
-```
+```rust
 let mut s = String::from("hello");
 s = String::from("digital");        // new value assign
 
@@ -200,7 +200,7 @@ println!("{s} world");              // it will print `digital world`
 Before we read: when we copy a variable value to another variable, it copies the stack data (pointer, length, capacity) but does not copy the heap data, because copying heap data is very expensive. 
 
 But in Rust we can also copy the heap data using a method called clone, which is called deep copy. For example:
-```
+```rust
 let s1 = String::from("hello");
 let s2 = s1.clone();
 println!("s1 = {s1}, s2 = {s2}");
@@ -209,7 +209,7 @@ println!("s1 = {s1}, s2 = {s2}");
 > Figure-4
 
 ### How Does Rust Copy Stack Data?
-```
+```rust
 let x = 5;
 let y = x;
 println!("x = {x}, y = {y}");
@@ -219,7 +219,7 @@ println!("x = {x}, y = {y}");
 
 ##### Why?
 Because the type `i32` implements the **Copy trait**. When a type implements the **Copy trait**, Rust copies the value instead of moving it.
-```
+```rust
 x = 5
     |
     | Copy
@@ -238,7 +238,7 @@ The **Copy trait** tells Rust: Automatically copy this value instead of moving i
 * The Boolean type (bool)
 * The character type (char)
 * Arrays and tuples also implement the Copy trait if all of their elements implement the Copy trait. For example
-   ```
+   ```rust
     // implements Copy trait
     let tup: (i32, f64, u8) = (500, 6.4, 1);
 
@@ -254,22 +254,22 @@ The rule is:
 **Every value has an owner.**  
 
 For example:
-```
+```rust
 let x = 5;
 ```
 Here `x` is the owner of value `5`. Now:
-```
+```rust
 let y = x;
 ```
 Normally, assigning a value moves ownership. But, i32 implements the Copy trait. So instead of moving ownership, Rust creates another independent value. After the copy:
-```
+```rust
 5        5
 ↑        ↑
 x        y
 (owner)  (owner)
 ```
 now there are two separate value, not one balue with two owners. Each variable owns its own copy. That's why both are valid:
-```
+```rust
 println!("{x}");
 println!("{y}");
 ```
@@ -279,7 +279,7 @@ Because every value has exactly one owner.
 ## Ownership and Functions
 ### How Ownership work when passing a value to a function?
 Passing a value to a function works the same way as assigning a value to a variable. For example:
-```
+```rust
 fn main() {
     let s = String::from("hello");  // s comes into scope
 
@@ -306,7 +306,7 @@ fn makes_copy(some_integer: i32) { // some_integer comes into scope
 
 ### How Ownership work when return value from a function?
 Returning a value from a function also transfers ownership. This works in a similar way to passing a value to a function. For example:
-```
+```rust
 fn main() {
     let s1 = gives_ownership();        // gives_ownership moves its return
                                        // value into s1
@@ -341,7 +341,7 @@ fn takes_and_gives_back(a_string: String) -> String {
 Ownership always follows the same rules: assigning a value to another variable moves ownership, and when the owner goes out of scope, the value is dropped.
 
 ### How Can a Function Use a Value Without Taking Ownership?
-```
+```rust
 fn main() {
     let s1 = String::from("hello");      // s1 becomes the owner of the String.
 

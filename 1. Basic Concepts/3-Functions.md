@@ -1,6 +1,6 @@
 # Functions
 A function is a block of code that performs a specific task. It can take parameters as input, run some logic, and return a value. For example:
-```
+```rust
 fn main() {
    println!("hello world")
 }
@@ -14,7 +14,7 @@ A function can have **parameters**, which are special variables used inside it.
 
 When you call the function, you give values to those parameters.
 These values are called **arguments**.
-```
+```rust
 fn main() {
     print_value(5); // 5 is the argument
 }
@@ -28,7 +28,7 @@ fn print_value(x: u8) { // x is the parameter
 * `5` is an argument because it is passed to the function when calling it.
 
 #### Always remember: when you declare a parameter, always specify its type.
-```
+```rust
 fn main() {
     print_labeled_measurement(5, 'h');
 }
@@ -44,13 +44,13 @@ fn print_labeled_measurement(value: i32, unit_label: char) {
 * An expression evaluates and gives you a value
 
 For example:
-```
+```rust
 let x = 5;    // Statement — just stores 5, gives you nothing back
 ```
-```
+```rust
 5 + 6        // Expression — gives you value 11
 ```
-```
+```rust
 6           // Any literal value is expression — gives you value 6
 ```
 * In Rust, literals (Number, Float, Character, String, Boolean) are expressions because they evaluate to a value.
@@ -61,7 +61,7 @@ let x = 5;    // Statement — just stores 5, gives you nothing back
 * Calling a macro is an expression
 
     For example:
-    ```
+    ```rust
     fn main() {
         let x =add(5,5);            // calling add() function here is a expression because it gives a value
         println!("result is {x}");  // println! macro is a expression because it gives () unit value
@@ -72,7 +72,7 @@ let x = 5;    // Statement — just stores 5, gives you nothing back
     }                                   // it does not give you a value
     ```
 * A new scope block created with curly brackets is an expression
-    ```
+    ```rust
     fn main() {
         let y = {
             let x = 3;
@@ -90,7 +90,7 @@ let x = 5;    // Statement — just stores 5, gives you nothing back
     ```
 #### Point - 3 :
 Expressions do not include ending semicolons. If you add a semicolon to the end of an expression, it becomes a statement and return no value.
-```
+```rust
 fn main() {
     let x =add(5,5);   // Calling add() function is aa expression, ; at end makes it a statement
     println!("result is {x}")
@@ -102,7 +102,7 @@ fn add(x: i32, y: i32) -> i32 {
 ```
 #### Point - 4 :
 Statements do not return values. Therefore, you can’t assign a let statement to another variable
-```
+```rust
 fn main() {
     let x = (let y = 6);
 }
@@ -112,7 +112,7 @@ fn main() {
 
 ## Return
 Functions can return values to the code that calls them
-```
+```rust
 fn main() {
    let x = add(5);
    println!("result = {x}")
@@ -124,7 +124,7 @@ fn add(x:i32) -> i32 {
 ```
 
 #### But what happens if we place a semicolon at the end of the line containing x + 1, like this:
-```
+```rust
 fn main() {
    let x = add(5);
    println!("result = {x}")

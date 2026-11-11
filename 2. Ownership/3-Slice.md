@@ -9,14 +9,14 @@ Collection is a group of values stored together. For example:
 
 ## String Slices
 A string slice is a reference to a contiguous sequence of the elements of a **String**. Example:
-```
+```rust
 let s = String::from("hello world");
 
 let hello = &s[0..5];
 let world = &s[6..11];
 ```
 Syntax of a string slice:
-```
+```rust
 &String[starting_index..ending_index]
 ```
 * **starting_index** is the first position in the slice 
@@ -24,7 +24,7 @@ Syntax of a string slice:
 
 Internally, the slice data structure stores the memory address of the first element of the slice and its length (ending_index - starting_index). For example:  
 `world` is a slice that contains a pointer to its first element (`w`) and a length of 5.
-```
+```rust
          s                            
 ┌─────────────────┐
 │ pointer = 0x1000│────────────┐
@@ -57,18 +57,18 @@ Internally, the slice data structure stores the memory address of the first elem
 ```
 #### What does "contiguous" mean here?
 contiguous means the elements in the slice are next to each other without skipping any elements. For example:
-```
+```rust
 let s = String::from("hello world");
 let hello = &s[0..5];
 ```
 `&s[0..5]` refers to:
-```
+```rust
 h e l l o
 ↑       ↑
 0       5
 ```
 These characters are next to each other:
-```
+```rust
 h → e → l → l → o
 ```
 So this is a **contiguous sequence**.  
@@ -78,23 +78,23 @@ For example, if we want `h l o` from `h e l l o`, we skip elements between them,
 
 ### Slice Example
 1) If you want to start at index 0, you can drop the starting index.
-    ```
+    ```rust
     let s = String::from("hello");
     let slice = &s[..2];
     ```
 2) if your slice includes the last byte of the String, you can drop the ending index.
-    ```
+    ```rust
     let s = String::from("hello");
     let slice = &s[2..];
     ```
 3) You can also drop both values to take a slice of the entire string.
-    ```
+    ```rust
     let s = String::from("hello");
     let slice = &s[..];
     ```
 
 #### Write a function that takes a string of words separated by spaces and returns the first word. If there is no space, return the entire string.
-```
+```rust
 fn main() {
     // Create a String
     let s = String::from("hello world");
@@ -140,7 +140,7 @@ fn first_word(s: &str) -> &str {
 ```
 
 ### Array Slices
-```
+```rust
 let a = ['a', 'e', 'i', 'o', 'u'];  // array
 let slice = &a[..3];                // slice of the array
 
@@ -151,10 +151,10 @@ for i in slice {
 ```
 #### Why use a slice with an array?
 Suppose you have:
-```
+```rust
 let a = ['a', 'e', 'i', 'o', 'u']; 
 ```
 You only want the first 3 elements:
-```
+```rust
 let slice = &a[..3];
 ```

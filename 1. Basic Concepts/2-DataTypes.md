@@ -51,7 +51,7 @@ So, an **u8** can store from 0 to 255
 $$2^8 - 1 = 256 - 1 = 255$$
 
 #### Example
-```
+```rust
 let x: i32 = 5;
 ```
 
@@ -63,21 +63,21 @@ Length|Types
 64-bit|f64
 
 #### Example
-```
+```rust
 let x: f32 = 5.2;
 ```
 
 ### Boolean
 In rust boolean type has two possible values: **true** and **false**. Booleans are one byte in size. 
 #### Example
-```
+```rust
 let f: bool = false;
 ```
 Boolean values are mainly used in conditionals, like an if statement
 
 ### Character
 In Rust, A char is written using single quotes **' '**
-```
+```rust
 let a: char = 'a';
 let heart_eyed_cat: char = '😻';
 ```
@@ -94,14 +94,14 @@ Rust has two compound type:
 
 ### Tuple
 Using a tuple, we can group multiple values into a single compound type, where each value may have a different type. For example:
-```
+```rust
 let tup: (i32, f64, u8) = (500, 6.4, 1);
 ```
 * **(i32, f64, u8)** is one type. It is a tuple type
 * Inside that single tuple type have multiple values. Each value can have a different type
 
 Tuples have a fixed length: Once declared at compile time, they cannot grow or shrink in size. For example:
-```
+```rust
 let tup: (i32, f64, u8) = (500, 6.4, 1);
 ```
 * The tuple **tup** has 3 elements
@@ -111,7 +111,7 @@ let tup: (i32, f64, u8) = (500, 6.4, 1);
 you can get values from a tuple in two ways:
 #### 1) Using destructuring (pattern matching)
 Unpack the tuple into individual variables
-```
+```rust
 let tup: (i32, f64, u8) = (500, 6.4, 1);
 
 let (x, y, z) = tup; // destructuring
@@ -124,7 +124,7 @@ Each variable gets the corresponding value from the tuple
 
 #### 2) Using index
 You can also access tuple values using their index
-```
+```rust
 let tup: (i32, f64, u8) = (500, 6.4, 1);
 
 println!("First value: {}", tup.0);
@@ -138,23 +138,23 @@ println!("Third value: {}", tup.2);
 * In Rust, arrays have a fixed length, which means once an array is initialized, you cannot add or remove elements.
 
 Example:
-```
+```rust
 let a: [i32; 5] = [1, 2, 3, 4, 5];
 ```
 * **i32** is the type of each element.
 * **5** is the length of the array, which means this array can contain 5 elements.
 
 You can initialize an array to cantaint same value like this:
-```
+```rust
 let a = [3;5]
 ```
 This is equivalent to:
-```
+```rust
 let a = [3, 3, 3, 3, 3];
 ```
 #### How to access array element:
 You can access elements of an array using indexing, like this:
-```
+```rust
 let a: [i32; 5] = [1, 2, 3, 4, 5];
 println!("1st element = {}",a[0]);
 println!("2nd element = {}",a[1]);
@@ -165,32 +165,32 @@ The compiler needs the type. If you don’t define the type, the compiler infers
 
 ### For Example:
 #### Integer
-```
+```rust
 let i = 5;
 ```
 The compiler takes it as an integer and infers the type as `i32`.
 #### Float
-```
+```rust
 let f = 5.0;
 ```
 The compiler takes it as a float and infers the type as `f64`.
 #### Bool
-```
+```rust
 let b = true;
 ```
 The compiler takes it as a bool.
 #### Char
-```
+```rust
 let c = 'a';
 ```
 The compiler takes it as a character.
 #### Tuple
-```
+```rust
 let tup = (5,5.0,true,'a');
 ```
 The compiler takes it as a tuple with different types.
 #### Array
-```
+```rust
 let arr = [1,2,3,4];
 ```
 The compiler treats it as an array of integers.
